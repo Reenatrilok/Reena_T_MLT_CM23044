@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Digit Recognition</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+
+</head>
+
+<body>
+
+<h2>Draw a Digit (0-9)</h2>
+
+<canvas id="canvas" width="280" height="280"
+style="border:2px solid black;"></canvas>
+
+<br><br>
+
+<button onclick="predict()">Predict Digit</button>
+<button onclick="clearCanvas()">Clear</button>
+
+<h3 id="result"></h3>
+
+<script>
+
+let canvas = document.getElementById("canvas");
+let ctx = canvas.getContext("2d");
+
+ctx.fillStyle="black";
+ctx.fillRect(0,0,280,280);
+
+let drawing=false;
+
+canvas.onmousedown=()=>drawing=true;
+canvas.onmouseup=()=>drawing=false;
+
+canvas.onmousemove=function(e){
+
+if(!drawing) return;
+
+ctx.fillStyle="white";
+ctx.beginPath();
+ctx.arc(e.offsetX,e.offsetY,10,0,Math.PI*2);
+ctx.fill();
+
+};
+
+function clearCanvas(){
+
+ctx.fillStyle="black";
+ctx.fillRect(0,0,280,280);
+
+}
+
+async function predict(){
+
+// simulate prediction (for demo)
+
+let digit = Math.floor(Math.random()*10);
+
+document.getElementById("result").innerText =
+"Predicted Digit: "+digit;
+
+}
+
+</script>
+
+</body>
+
+</html>

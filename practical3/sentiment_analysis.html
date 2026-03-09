@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Sentiment Analysis</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+
+</head>
+
+<body>
+
+<h2>Simple Sentiment Analysis</h2>
+
+<script>
+
+function analyze(){
+
+let text = document.getElementById("review").value;
+
+if(text.includes("good") || text.includes("great"))
+{
+alert("Positive Sentiment");
+}
+else
+{
+alert("Negative Sentiment");
+}
+
+}
+
+</script>
+
+<input id="review" placeholder="Enter review">
+
+<button onclick="analyze()">Analyze</button>
+
+</body>
+</html>

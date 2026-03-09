@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Linear Regression</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body>
+
+<h2>Linear Regression with TensorFlow.js</h2>
+
+<canvas id="chart" width="400" height="200"></canvas>
+
+<script>
+
+const model = tf.sequential();
+
+model.add(tf.layers.dense({
+units:1,
+inputShape:[1]
+}));
+
+model.compile({
+loss:'meanSquaredError',
+optimizer:'sgd'
+});
+
+const xs = tf.tensor([1,2,3,4]);
+const ys = tf.tensor([2,4,6,8]);
+
+async function train(){
+
+await model.fit(xs,ys,{epochs:200});
+
+const testX = [1,2,3,4,5];
+const predictions = model.predict(tf.tensor(testX)).dataSync();
+
+drawChart(testX,predictions);
+
+}
+
+function drawChart(x,pred){
+
+new Chart(document.getElementById("chart"),{
+type:'line',
+data:{
+labels:x,
+datasets:[
+{
+label:'Predicted Line',
+data:pred
+},
+{
+label:'Original Data',
+data:[2,4,6,8,10]
+}
+]
+}
+});
+
+}
+
+train();
+
+</script>
+
+</body>
+
+</html>
