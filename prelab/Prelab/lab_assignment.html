@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Lab Assignment - Tensor Operations</title>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+</head>
+
+<body>
+
+<h2>TensorFlow.js Lab Assignment</h2>
+
+<button onclick="run()">Run Experiment</button>
+
+<pre id="output"></pre>
+
+<script>
+
+function run(){
+
+let out="";
+
+// Scalar
+let scalar=tf.scalar(5);
+out+="Scalar:\n"+scalar.toString()+"\n\n";
+
+// Vector
+let vector=tf.tensor1d([1,2,3]);
+out+="Vector:\n"+vector.toString()+"\n\n";
+
+// Matrix
+let matrix=tf.tensor2d([[1,2],[3,4]]);
+out+="Matrix:\n"+matrix.toString()+"\n\n";
+
+// Addition
+let a=tf.tensor1d([1,2,3]);
+let b=tf.tensor1d([4,5,6]);
+out+="Addition:\n"+a.add(b).toString()+"\n\n";
+
+// Multiplication
+out+="Multiplication:\n"+a.mul(b).toString()+"\n\n";
+
+// Reshape
+let t=tf.tensor1d([1,2,3,4]);
+out+="Reshape:\n"+t.reshape([2,2]).toString();
+
+document.getElementById("output").innerText=out;
+
+}
+
+</script>
+
+</body>
+</html>
