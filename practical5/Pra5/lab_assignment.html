@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Webcam Classification - MobileNet</title>
+
+    <!-- TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+
+    <!-- MobileNet -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
+
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial;
+        }
+
+        #container {
+            position: relative;
+            display: inline-block;
+        }
+
+        video, canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        #fps {
+            margin-top: 520px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<h2>Real-Time Image Classification (MobileNet)</h2>
+
+<div id="container">
+    <video id="webcam" autoplay playsinline width="640" height="480"></video>
+    <canvas id="canvas" width="640" height="480"></canvas>
+</div>
+
+<div id="fps">FPS: 0</div>
+
+<script src="lab_assignment.js"></script>
+
+</body>
+</html>
