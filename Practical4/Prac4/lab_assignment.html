@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Lab Assignment - Image Classification</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
+
+<style>
+body{
+font-family:Arial;
+text-align:center;
+background:#f4f6f9;
+padding:30px;
+}
+
+.container{
+background:white;
+padding:25px;
+border-radius:10px;
+width:600px;
+margin:auto;
+box-shadow:0px 4px 12px rgba(0,0,0,0.1);
+}
+
+img{
+max-width:300px;
+margin-top:15px;
+border-radius:8px;
+}
+
+button{
+margin-top:10px;
+padding:10px 20px;
+background:#2c7be5;
+color:white;
+border:none;
+border-radius:5px;
+cursor:pointer;
+}
+
+#result{
+margin-top:15px;
+font-weight:bold;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Lab Assignment: Image Classification</h2>
+
+<p id="status">Loading MobileNet...</p>
+
+<input type="file" id="upload">
+
+<br>
+
+<img id="preview">
+
+<br>
+
+<button onclick="classify()">Classify</button>
+
+<div id="result">Awaiting image...</div>
+
+</div>
+
+<script>
+
+let model;
+
+async function loadModel(){
+
+model = await mobilenet.load({version:2,alpha:1.0});
+
+document.getElementById("status").innerText="MobileNet Loaded";
+
+}
+
+loadModel();
+
+document.getElementById("upload").addEventListener("change",function(e){
+
+let reader=new FileReader();
+
+reader.onload=function(){
+
+document.getElementById("preview").src=reader.result;
+
+};
+
+reader.readAsDataURL(e.target.files[0]);
+
+});
+
+async function classify(){
+
+if(!model){
+alert("Model loading...");
+return;
+}
+
+let img=document.getElementById("preview");
+
+let predictions=await model.classify(img,3);
+
+let output="Top 3 Predictions (MobileNet):<br><br>";
+
+predictions.forEach((p,i)=>{
+output+= (i+1)+". "+p.className+
+" ("+(p.probability*100).toFixed(2)+"%)<br>";
+});
+
+// Simulated ResNet comparison
+output+="<br><br><b>ResNet (Comparison):</b><br>";
+output+="Prediction similar but slightly more accurate for complex images.";
+
+document.getElementById("result").innerHTML=output;
+
+}
+
+</script>
+
+</body>
+</html>

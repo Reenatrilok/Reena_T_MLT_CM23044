@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Practical 4 - Image Classification (MobileNet)</title>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.0"></script>
+
+<!-- Plotly for Graph -->
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<style>
+
+body{
+font-family: Arial;
+text-align:center;
+background:#f4f6f9;
+padding:30px;
+}
+
+.container{
+background:white;
+padding:25px;
+border-radius:10px;
+width:600px;
+margin:auto;
+box-shadow:0px 4px 12px rgba(0,0,0,0.1);
+}
+
+img{
+margin-top:15px;
+max-width:300px;
+border-radius:8px;
+}
+
+button{
+margin-top:10px;
+padding:10px 20px;
+background:#2c7be5;
+color:white;
+border:none;
+border-radius:5px;
+cursor:pointer;
+}
+
+button:hover{
+background:#1a5dcc;
+}
+
+#result{
+margin-top:15px;
+font-size:18px;
+font-weight:bold;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Practical 4: Image Classification with MobileNet</h2>
+
+<p id="status">Loading model...</p>
+
+<input type="file" id="imageUpload" accept="image/*">
+
+<br>
+
+<img id="preview">
+
+<br>
+
+<button onclick="classifyImage()">Classify Image</button>
+
+<div id="result">Awaiting image...</div>
+
+<div id="plot"></div>
+
+</div>
+
+<script>
+
+let model;
+
+// Load MobileNet model
+async function loadModel(){
+
+model = await mobilenet.load({
+version:2,
+alpha:1.0
+});
+
+document.getElementById("status").innerText="Model Loaded! Upload an image.";
+
+}
+
+loadModel();
+
+// Preview uploaded image
+document.getElementById("imageUpload").addEventListener("change",function(event){
+
+const reader=new FileReader();
+
+reader.onload=function(){
+
+document.getElementById("preview").src=reader.result;
+
+};
+
+reader.readAsDataURL(event.target.files[0]);
+
+});
+
+// Classify image
+async function classifyImage(){
+
+if(!model){
+
+document.getElementById("result").innerText="Model still loading...";
+return;
+
+}
+
+const img=document.getElementById("preview");
+
+const predictions=await model.classify(img,3);
+
+const top=predictions[0];
+
+document.getElementById("result").innerText=
+"Prediction: "+top.className+
+" ("+(top.probability*100).toFixed(2)+"%)";
+
+// Plot graph
+const data=[{
+x:predictions.map(p=>p.className),
+y:predictions.map(p=>p.probability),
+type:"bar"
+}];
+
+const layout={
+title:"Top 3 Predictions",
+yaxis:{range:[0,1],title:"Probability"}
+};
+
+Plotly.newPlot("plot",data,layout);
+
+}
+
+</script>
+
+</body>
+
+</html>
