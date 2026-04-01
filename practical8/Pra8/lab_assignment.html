@@ -1,0 +1,72 @@
+import tensorflow as tf
+import numpy as np
+import os
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.applications import MobileNetV2
+from tensorflow.keras import layers, models
+from sklearn.metrics import confusion_matrix, classification_report
+
+# 🔥 CHANGE THIS PATH
+dataset_path = "YOUR_DOWNLOADED_PATH/train"
+
+IMG_SIZE = 224
+BATCH_SIZE = 32
+
+# Data Generator (only 3 classes)
+datagen = ImageDataGenerator(
+    rescale=1./255,
+    validation_split=0.3
+)
+
+train_data = datagen.flow_from_directory(
+    dataset_path,
+    target_size=(IMG_SIZE, IMG_SIZE),
+    batch_size=BATCH_SIZE,
+    subset='training',
+    classes=['freshapples', 'freshbanana', 'freshoranges'],
+    class_mode='categorical'
+)
+
+val_data = datagen.flow_from_directory(
+    dataset_path,
+    target_size=(IMG_SIZE, IMG_SIZE),
+    batch_size=BATCH_SIZE,
+    subset='validation',
+    classes=['freshapples', 'freshbanana', 'freshoranges'],
+    class_mode='categorical'
+)
+
+# Load MobileNetV2
+base_model = MobileNetV2(weights='imagenet', include_top=False, input_shape=(224,224,3))
+base_model.trainable = False
+
+# Custom Model
+model = models.Sequential([
+    base_model,
+    layers.GlobalAveragePooling2D(),
+    layers.Dense(128, activation='relu'),
+    layers.Dense(3, activation='softmax')
+])
+
+model.compile(optimizer='adam',
+              loss='categorical_crossentropy',
+              metrics=['accuracy'])
+
+# Train
+history = model.fit(train_data, validation_data=val_data, epochs=5)
+
+# Evaluate
+loss, acc = model.evaluate(val_data)
+print("\n✅ Accuracy:", acc)
+
+# Predictions
+y_pred = model.predict(val_data)
+y_pred_classes = np.argmax(y_pred, axis=1)
+y_true = val_data.classes
+
+# Confusion Matrix
+cm = confusion_matrix(y_true, y_pred_classes)
+print("\n📊 Confusion Matrix:\n", cm)
+
+# Classification Report
+print("\n📄 Report:\n", classification_report(y_true, y_pred_classes))

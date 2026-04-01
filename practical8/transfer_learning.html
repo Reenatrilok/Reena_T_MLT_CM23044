@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Transfer Learning - MobileNet</title>
+
+    <!-- TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0"></script>
+
+    <!-- MobileNet -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
+
+    <!-- KNN Classifier -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/knn-classifier"></script>
+
+    <style>
+        body { text-align: center; font-family: Arial; }
+        video { border: 2px solid black; }
+        button { margin: 5px; padding: 10px; }
+    </style>
+</head>
+
+<body>
+
+<h2>Transfer Learning with MobileNet</h2>
+
+<video id="webcam" width="300" height="250" autoplay></video>
+
+<br><br>
+
+<button onclick="addExample('apple')">Add Apple</button>
+<button onclick="addExample('banana')">Add Banana</button>
+<button onclick="addExample('orange')">Add Orange</button>
+
+<br><br>
+
+<button onclick="startPrediction()">Start Prediction</button>
+
+<h3 id="result">Prediction: -</h3>
+
+<script>
+const video = document.getElementById("webcam");
+
+let net;
+let classifier;
+
+// Setup webcam
+async function setupWebcam() {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    video.srcObject = stream;
+
+    return new Promise(resolve => {
+        video.onloadedmetadata = () => {
+            video.play();
+            resolve();
+        };
+    });
+}
+
+// Load models
+async function loadModels() {
+    net = await mobilenet.load();
+    classifier = knnClassifier.create();
+    console.log("Models loaded");
+}
+
+// Add training example
+async function addExample(label) {
+    const activation = net.infer(video, true);
+    classifier.addExample(activation, label);
+    console.log(label + " added");
+}
+
+// Predict
+async function startPrediction() {
+    while (true) {
+        if (classifier.getNumClasses() > 0) {
+            const activation = net.infer(video, true);
+            const result = await classifier.predictClass(activation);
+
+            document.getElementById("result").innerText =
+                "Prediction: " + result.label +
+                " (" + (result.confidences[result.label] * 100).toFixed(2) + "%)";
+        }
+        await tf.nextFrame();
+    }
+}
+
+// Main
+async function main() {
+    await setupWebcam();
+    await loadModels();
+}
+
+main();
+</script>
+
+</body>
+</html>
